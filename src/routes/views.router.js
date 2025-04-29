@@ -4,13 +4,13 @@ import ProductManager from '../managers/ProductManager.js'
 const router = Router()
 const productManager = new ProductManager('src/data/products.json')
 
-router.get('/', async (req, res) => {
-  res.json(await productManager.getProducts())
+router.get('/home', async (req, res) => {
+  const products = await productManager.getProducts()
+  res.render('home', { products })
 })
 
-router.post('/', async (req, res) => {
-  await productManager.addProduct(req.body)
-  res.sendStatus(201)
+router.get('/realtimeproducts', (req, res) => {
+  res.render('realTimeProducts')
 })
 
 export default router
