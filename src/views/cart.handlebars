@@ -1,0 +1,93 @@
+<h1>Carrito de Compras</h1>
+
+{{#if cart.products.length}}
+  <div class="cart-items">
+    {{#each cart.products}}
+      <div class="cart-item">
+        <div class="item-info">
+          <h3>{{this.product.title}}</h3>
+          <p>Precio: ${{this.product.price}}</p>
+          <p>Cantidad: {{this.quantity}}</p>
+          <p>Subtotal: ${{multiply this.product.price this.quantity}}</p>
+        </div>
+        <div class="item-actions">
+          <form class="update-quantity" data-product-id="{{this.product._id}}">
+            <input type="number" min="1" value="{{this.quantity}}" class="quantity-input">
+            <button type="submit" class="btn">Actualizar</button>
+          </form>
+          <button class="btn remove-item" data-product-id="{{this.product._id}}">Eliminar</button>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+  
+  <div class="cart-summary">
+    <h3>Total: ${{calculateTotal cart.products}}</h3>
+    <button id="empty-cart" class="btn danger">Vaciar carrito</button>
+    <a href="/products" class="btn secondary">Seguir comprando</a>
+    <button id="checkout" class="btn primary">Finalizar compra</button>
+  </div>
+{{else}}
+  <div class="empty-cart-message">
+    <p>El carrito está vacío</p>
+    <a href="/products" class="btn">Ver productos</a>
+  </div>
+{{/if}}
+
+<script>
+  // Actualizar cantidad
+  document.querySelectorAll('.update-quantity').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const productId = form.dataset.productId;
+      const quantity = form.querySelector('.quantity-input').value;
+      try {
+        const response = await fetch(`/api/carts/{{cart._id}}/products/${productId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ quantity: parseInt(quantity) })
+        });
+        if (response.ok) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error al actualizar cantidad', error);
+      }
+    });
+  });
+
+  // Eliminar producto
+  document.querySelectorAll('.remove-item').forEach(button => {
+    button.addEventListener('click', async () => {
+      const productId = button.dataset.productId;
+      try {
+        const response = await fetch(`/api/carts/{{cart._id}}/products/${productId}`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error al eliminar producto', error);
+      }
+    });
+  });
+
+  // Vaciar carrito
+  document.getElementById('empty-cart')?.addEventListener('click', async () => {
+    if (confirm('¿Estás seguro de vaciar el carrito?')) {
+      try {
+        const response = await fetch(`/api/carts/{{cart._id}}`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error al vaciar carrito', error);
+      }
+    }
+  });
+</script>

@@ -1,25 +1,35 @@
 import app from './app.js'
 import { Server } from 'socket.io'
 import http from 'http'
-import ProductManager from './managers/ProductManager.js'
+import ProductService from './services/ProductService.js'
 
 const server = http.createServer(app)
 const io = new Server(server)
-const productManager = new ProductManager('src/data/products.json')
+const productService = new ProductService()
 
 io.on('connection', async (socket) => {
   console.log('Cliente conectado')
-  socket.emit('productList', await productManager.getProducts())
+  
+  // Enviar lista de productos al cliente
+  const products = await productService.getProducts({})
+  socket.emit('productList', products.docs)
 
+  // Escuchar evento de agregar producto
   socket.on('addProduct', async (data) => {
-    await productManager.addProduct(data)
-    io.emit('productList', await productManager.getProducts())
+    await productService.create(data)
+    const updatedProducts = await productService.getProducts({})
+    io.emit('productList', updatedProducts.docs)
   })
 
+  // Escuchar evento de eliminar producto
   socket.on('deleteProduct', async (id) => {
-    await productManager.deleteProduct(id)
-    io.emit('productList', await productManager.getProducts())
+    await productService.delete(id)
+    const updatedProducts = await productService.getProducts({})
+    io.emit('productList', updatedProducts.docs)
   })
 })
 
-server.listen(8080, () => console.log('Servidor con socket.io en puerto 8080'))
+const PORT = process.env.PORT || 8080
+server.listen(PORT, () => {
+  console.log(`Servidor Socket.io corriendo en puerto ${PORT}`)
+})

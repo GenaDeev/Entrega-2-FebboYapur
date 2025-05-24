@@ -1,24 +1,54 @@
-import { Router } from 'express'
-import CartManager from '../managers/CartManager.js'
+import { Router } from "express";
+import CartService from "../services/CartService.js";
 
-const router = Router()
-const manager = new CartManager('src/data/carts.json')
+const router = Router();
+const cartService = new CartService();
 
-router.post('/', async (req, res) => {
-  const cart = await manager.createCart()
-  res.status(201).json(cart)
-})
+// Crear carrito
+router.post("/", async (req, res) => {
+  const cart = await cartService.create();
+  res.status(201).json(cart);
+});
 
-router.get('/:cid', async (req, res) => {
-  const cart = await manager.getCartById(req.params.cid)
-  if (!cart) return res.status(404).json({ error: 'Carrito no encontrado' })
-  res.json(cart.products)
-})
+// Obtener carrito con populate
+router.get("/:cid", async (req, res) => {
+  const cart = await cartService.getById(req.params.cid);
+  res.json(cart);
+});
 
-router.post('/:cid/product/:pid', async (req, res) => {
-  const cart = await manager.addProductToCart(req.params.cid, req.params.pid)
-  if (!cart) return res.status(404).json({ error: 'Carrito no encontrado' })
-  res.json(cart)
-})
+// Agregar producto al carrito
+router.post("/:cid/product/:pid", async (req, res) => {
+  const cart = await cartService.addProduct(req.params.cid, req.params.pid);
+  res.json(cart);
+});
 
-export default router
+// Eliminar producto específico del carrito
+router.delete("/:cid/products/:pid", async (req, res) => {
+  const cart = await cartService.deleteProduct(req.params.cid, req.params.pid);
+  res.json(cart);
+});
+
+// Reemplazar todos los productos del carrito
+router.put("/:cid", async (req, res) => {
+  const cart = await cartService.updateAll(req.params.cid, req.body.products);
+  res.json(cart);
+});
+
+// Actualizar cantidad de un producto
+router.put("/:cid/products/:pid", async (req, res) => {
+  const { quantity } = req.body;
+  const cart = await cartService.updateProductQuantity(
+    req.params.cid,
+    req.params.pid,
+    quantity
+  );
+  res.json(cart);
+});
+
+// Vaciar carrito
+router.delete("/:cid", async (req, res) => {
+  const cart = await cartService.clearCart(req.params.cid);
+  res.json(cart);
+});
+
+export default router;

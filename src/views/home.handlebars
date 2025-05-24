@@ -1,6 +1,10 @@
-<h1>Lista de productos (vista estática)</h1>
+<h1>Home - Lista de productos</h1>
+
 <ul>
   {{#each products}}
-    <li>{{this.title}} - ${{this.price}}</li>
+    <li>
+      <strong>{{this.title}}</strong> - ${{this.price}} |
+      <a href="/products/{{this._id}}">Ver detalle</a>
+    </li>
   {{/each}}
 </ul>

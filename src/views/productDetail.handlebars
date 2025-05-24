@@ -1,0 +1,42 @@
+<div class="product-detail">
+  <h1>{{product.title}}</h1>
+  
+  {{#if product.thumbnails.length}}
+    <div class="product-images">
+      {{#each product.thumbnails}}
+        <img src="{{this}}" alt="{{../product.title}}">
+      {{/each}}
+    </div>
+  {{/if}}
+  
+  <div class="product-info">
+    <p class="description">{{product.description}}</p>
+    <p class="price">Precio: ${{product.price}}</p>
+    <p class="category">Categoría: {{product.category}}</p>
+    <p class="code">Código: {{product.code}}</p>
+    <p class="stock">Stock: {{product.stock}}</p>
+    <p class="status">Estado: {{#if product.status}}Disponible{{else}}No disponible{{/if}}</p>
+  </div>
+  
+  <div class="actions">
+    <button id="add-to-cart" class="btn" data-id="{{product._id}}">Agregar al carrito</button>
+    <a href="/products" class="btn secondary">Volver a productos</a>
+  </div>
+</div>
+
+<script>
+  document.getElementById('add-to-cart').addEventListener('click', async () => {
+    const productId = document.getElementById('add-to-cart').dataset.id;
+    try {
+      const cartId = localStorage.getItem('cartId') || '{{defaultCartId}}';
+      const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
+        method: 'POST'
+      });
+      if (response.ok) {
+        alert('Producto agregado al carrito');
+      }
+    } catch (error) {
+      console.error('Error al agregar al carrito', error);
+    }
+  });
+</script>

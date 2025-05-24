@@ -1,16 +1,17 @@
 {
-  "name": "entrega-2",
-  "version": "2.0.0",
+  "name": "ecommerce-final-project",
+  "version": "1.0.0",
   "type": "module",
-  "description": "Proyecto con Express, Handlebars y Socket.io",
-  "main": "src/server.js",
+  "description": "Proyecto final backend Coderhouse - Ecommerce con MongoDB, Express, Handlebars y Socket.io",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "express-handlebars": "^7.0.7",
+    "mongoose": "^7.3.4",
     "socket.io": "^4.7.2"
   },
   "devDependencies": {

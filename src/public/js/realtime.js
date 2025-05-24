@@ -18,7 +18,7 @@ socket.on('productList', (products) => {
   list.innerHTML = ''
   products.forEach(p => {
     const li = document.createElement('li')
-    li.innerHTML = `${p.title} - $${p.price} <button onclick="deleteProduct(${p.id})">Eliminar</button>`
+    li.innerHTML = `${p.title} - $${p.price} <button onclick="deleteProduct('${p._id}')">Eliminar</button>`
     list.appendChild(li)
   })
 })
